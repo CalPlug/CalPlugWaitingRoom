@@ -1,0 +1,100 @@
+<html>
+    <head>
+        <title>Sign In</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        
+    </head>
+    <body style="background-color: #90c132;">
+        <div class="container pt-3">
+            <div class="row justify-content-center" >
+                <div class="col-auto p-5" style="background-color:white;">
+                    <h1 style="color:#295b9f;">Welcome to CalPlug! Please sign in.</h1>
+
+                    <div id="msg"></div>
+
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" placeholder="John Smith">
+                    </div>
+                    <div class="form-group">
+                        <label for="position">Position</label>
+                        <select class="form-control" id="position">
+                            <option>Klo-Oct1801: Smartenit IoT Interface</option>
+                            <option>Klo-Oct1802: Project SIM Test</option>
+                            <option>Klo-Oct1803: Project Buddy</option>
+                            <option>Klo-Oct1804: Project FPGA - Field Programmable Gate Arrays</option>
+                            <option>Klo-Oct1805: Project UI</option>
+                        </select>
+                    </div>
+                    <div class="text-right">
+                        <button id="btnReset" type="button" class="btn btn-danger">Reset Form</button>
+                        <button id="btnSubmit" type="button" class="btn btn-primary">Sign in</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="loadingModal" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Signing in.</h5>
+                    </div>
+                    <div class="modal-body">
+                        <p>Please wait...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+        <script type="text/javascript">
+            function resetForm(){
+                $('#name').val('');
+                $('#position option').prop('selected', false);
+                $('#position option:first-child').prop('selected', true);
+
+                $('#msg').html('');
+            }
+
+            $(function(){
+                $('#btnReset').click(function(){
+                    resetForm();
+                });
+
+                $('#btnSubmit').click(function(){
+                    $('#loadingModal').modal('show');
+                    $('#msg').html('');
+                    $.ajax({
+                        type: "POST",
+                        url: '/client',
+                        dataType: "json",
+                        data: {
+                            name: $('#name').val(),
+                            position: $('#position option:selected').text()
+                        },
+                        success: function(){
+                            resetForm();
+                            $('#msg').html('<span style="color:green;">Signed in successfully! You will be called in soon.</span>');
+                            setTimeout(function(){
+                                $('#msg').html('');
+                            }, 5000);
+                        },
+                        error: function(){
+                            $('#msg').html('<span style="color:red;">There was some error in your submission. Please try again.</span>');
+                        },
+                        complete: function(){
+                            setTimeout(function(){
+                                $('#loadingModal').modal('hide');
+                            }, 1000);
+                        }
+                    });
+                });
+            });
+        </script>
+        
+    </body>
+</html>
